@@ -9,6 +9,7 @@ namespace Application
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IFlowService, FlowService>();
+            services.AddScoped<IStateService, StateService>();
             return services;
         }
     }

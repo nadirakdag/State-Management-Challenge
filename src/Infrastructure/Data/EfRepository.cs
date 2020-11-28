@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.Data;
@@ -22,6 +24,16 @@ namespace Infrastructure.Data
             return await _stateManagementContext.Set<T>().ToListAsync();
         }
 
+        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
+        {
+            return await _stateManagementContext.Set<T>().FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<List<T>> Get(Expression<Func<T, bool>> predicate)
+        {
+            return await _stateManagementContext.Set<T>().Where(predicate).ToListAsync();
+        }
+
         public async Task<T> Get(Guid id)
         {
             return await _stateManagementContext.Set<T>().FindAsync(id);
@@ -40,7 +52,7 @@ namespace Infrastructure.Data
             var effectedRecordCount = await _stateManagementContext.SaveChangesAsync();
             if (effectedRecordCount < 1)
                 return null;
-            
+
             return model;
         }
 

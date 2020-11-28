@@ -12,6 +12,7 @@ namespace Infrastructure.Data
         }
         
         public DbSet<Flow> Flows { get; set; }
+        public DbSet<State> States { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
