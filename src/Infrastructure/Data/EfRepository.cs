@@ -27,7 +27,6 @@ namespace Infrastructure.Data
         {
             return await _stateManagementContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
-
         public async Task<List<T>> Get(Expression<Func<T, bool>> predicate)
         {
             return await _stateManagementContext.Set<T>().Where(predicate).ToListAsync();
@@ -44,7 +43,7 @@ namespace Infrastructure.Data
             return model;
         }
 
-        public async Task<T> Update(T model)
+        public T Update(T model)
         {
             _stateManagementContext.Set<T>().Update(model);
             return model;

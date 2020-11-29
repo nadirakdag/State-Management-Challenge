@@ -4,6 +4,7 @@ using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using Task = System.Threading.Tasks.Task;
 
 namespace IntegrationTests
 {
@@ -22,7 +23,8 @@ namespace IntegrationTests
             _stateManagementContext = new StateManagementContext(dbOptions);
             var flowRepository = new EfRepository<Flow>(_stateManagementContext);
             var stateRepository = new EfRepository<State>(_stateManagementContext);
-            _unitOfWork = new UnitOfWork(flowRepository, stateRepository, _stateManagementContext);
+            var taskRepository = new EfRepository<StateTask>(_stateManagementContext);
+            _unitOfWork = new UnitOfWork(flowRepository, stateRepository, taskRepository, _stateManagementContext);
         }
 
         [Test]
@@ -53,7 +55,7 @@ namespace IntegrationTests
             await _unitOfWork.SaveChangesAsync();
                 
             flow.Title = "Updated Flow";
-            await _unitOfWork.FlowRepository.Update(flow);
+            _unitOfWork.FlowRepository.Update(flow);
             await _unitOfWork.SaveChangesAsync();
             
             var record = await _unitOfWork.FlowRepository.Get(flow.Id);

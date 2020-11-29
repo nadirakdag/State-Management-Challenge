@@ -10,6 +10,7 @@ namespace Application
         {
             services.AddScoped<IFlowService, FlowService>();
             services.AddScoped<IStateService, StateService>();
+            services.AddScoped<ITaskService, TaskService>();
             return services;
         }
     }

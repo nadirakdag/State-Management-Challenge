@@ -13,7 +13,7 @@ namespace Application.Common.Interfaces.Data
         Task<List<T>> Get(Expression<Func<T, bool>> predicate);
         Task<T> Get(Guid id);
         Task<T> Create(T model);
-        Task<T> Update(T model);
+        T Update(T model);
         Task<T> Delete(Guid id);
     }
 }

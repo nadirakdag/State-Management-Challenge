@@ -28,7 +28,7 @@ namespace Application.Services
 
         public async Task<Flow> Update(Flow flow)
         {
-            flow = await _unitOfWork.FlowRepository.Update(flow);
+            flow = _unitOfWork.FlowRepository.Update(flow);
             await _unitOfWork.SaveChangesAsync();
             return flow;
         }

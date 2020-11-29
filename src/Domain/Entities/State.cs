@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Entities
 {
@@ -11,5 +12,7 @@ namespace Domain.Entities
         
         public Guid? PrevStateId { get; set; }
         public Guid? NextStateId { get; set; }
+        
+        public ICollection<StateTask> Task { get; set; }
     }
 }

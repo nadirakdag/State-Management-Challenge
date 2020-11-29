@@ -28,7 +28,7 @@ namespace Application.Services
 
         public async Task<State> Update(State state)
         {
-            state =  await _unitOfWork.StateRepository.Update(state);
+            state =  _unitOfWork.StateRepository.Update(state);
             await _unitOfWork.SaveChangesAsync();
             return state;
         }
@@ -44,7 +44,7 @@ namespace Application.Services
             if (prevState != null)
             {
                 prevState.NextStateId = state.Id;
-                await _unitOfWork.StateRepository.Update(prevState);
+                _unitOfWork.StateRepository.Update(prevState);
             }
             
             await _unitOfWork.SaveChangesAsync();
@@ -59,14 +59,14 @@ namespace Application.Services
             {
                 var prevState = await _unitOfWork.StateRepository.Get(state.PrevStateId.Value);
                 prevState.NextStateId = state.NextStateId;
-                await _unitOfWork.StateRepository.Update(prevState);
+                _unitOfWork.StateRepository.Update(prevState);
             }
 
             if (state.NextStateId.HasValue)
             {
                 var nextState = await _unitOfWork.StateRepository.Get(state.NextStateId.Value);
                 nextState.PrevStateId = state.PrevStateId;
-                await _unitOfWork.StateRepository.Update(nextState);
+                _unitOfWork.StateRepository.Update(nextState);
             }
             
             await _unitOfWork.StateRepository.Delete(id);
