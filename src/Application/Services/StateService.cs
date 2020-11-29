@@ -9,47 +9,68 @@ namespace Application.Services
 {
     public class StateService : IStateService
     {
-        private readonly IRepository<State> _stateRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public StateService(IRepository<State> stateRepository)
+        public StateService(IUnitOfWork unitOfWork)
         {
-            _stateRepository = stateRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<State>> GetByFlowId(Guid flowId)
         {
-            return await _stateRepository.Get(x => x.FlowId == flowId);
+            return await _unitOfWork.StateRepository.Get(x => x.FlowId == flowId);
         }
 
         public async Task<State> Get(Guid id)
         {
-            return await _stateRepository.Get(id);
+            return await _unitOfWork.StateRepository.Get(id);
         }
 
         public async Task<State> Update(State state)
         {
-            return await _stateRepository.Update(state);
+            state =  await _unitOfWork.StateRepository.Update(state);
+            await _unitOfWork.SaveChangesAsync();
+            return state;
         }
 
         public async  Task<State> Create(State state)
         {
-            var prevState = await _stateRepository.FirstOrDefault(x => x.NextStateId == null);
+            var prevState = await _unitOfWork.StateRepository.FirstOrDefault(x => x.NextStateId == null && x.FlowId == state.FlowId);
             
+            state.Id = Guid.NewGuid();
             state.PrevStateId = prevState?.Id;
-            state  = await _stateRepository.Create(state);
+            state  = await _unitOfWork.StateRepository.Create(state);
             
             if (prevState != null)
             {
                 prevState.NextStateId = state.Id;
-                await _stateRepository.Update(prevState);
+                await _unitOfWork.StateRepository.Update(prevState);
             }
             
+            await _unitOfWork.SaveChangesAsync();
             return state;
         }
 
         public async Task Delete(Guid id)
         {
-            await _stateRepository.Delete(id);
+            var state = await _unitOfWork.StateRepository.Get(id);
+            
+            if (state.PrevStateId.HasValue)
+            {
+                var prevState = await _unitOfWork.StateRepository.Get(state.PrevStateId.Value);
+                prevState.NextStateId = state.NextStateId;
+                await _unitOfWork.StateRepository.Update(prevState);
+            }
+
+            if (state.NextStateId.HasValue)
+            {
+                var nextState = await _unitOfWork.StateRepository.Get(state.NextStateId.Value);
+                nextState.PrevStateId = state.PrevStateId;
+                await _unitOfWork.StateRepository.Update(nextState);
+            }
+            
+            await _unitOfWork.StateRepository.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

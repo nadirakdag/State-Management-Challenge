@@ -9,40 +9,42 @@ namespace Application.Services
 {
     public class FlowService : IFlowService
     {
-        private readonly IRepository<Flow> _flowRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public FlowService(IRepository<Flow> flowRepository)
+        public FlowService(IUnitOfWork unitOfWork)
         {
-            _flowRepository = flowRepository;
+            _unitOfWork = unitOfWork;
         }
         
         public async Task<List<Flow>> Get()
         {
-            return await _flowRepository.Get();
+            return await _unitOfWork.FlowRepository.Get();
         }
 
         public async Task<Flow> Get(Guid id)
         {
-            return await _flowRepository.Get(id);
+            return await _unitOfWork.FlowRepository.Get(id);
         }
 
         public async Task<Flow> Update(Flow flow)
         {
-            return await _flowRepository.Update(flow);
+            flow = await _unitOfWork.FlowRepository.Update(flow);
+            await _unitOfWork.SaveChangesAsync();
+            return flow;
         }
 
         public async Task<Flow> Create(Flow flow)
         {
-            return await _flowRepository.Create(new Flow()
-            {
-                Id = Guid.NewGuid(),
-                Title = flow.Title
-            });
+            flow.Id = Guid.NewGuid();
+            flow = await _unitOfWork.FlowRepository.Create(flow);
+            await _unitOfWork.SaveChangesAsync();
+            return flow;
         }
 
         public async Task Delete(Guid id)
         {
-            await _flowRepository.Delete(id);
+            await _unitOfWork.FlowRepository.Delete(id);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

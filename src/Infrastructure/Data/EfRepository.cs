@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.Data;
 using Domain.Entities;
@@ -42,17 +41,12 @@ namespace Infrastructure.Data
         public async Task<T> Create(T model)
         {
             await _stateManagementContext.Set<T>().AddAsync(model);
-            await _stateManagementContext.SaveChangesAsync();
             return model;
         }
 
         public async Task<T> Update(T model)
         {
             _stateManagementContext.Set<T>().Update(model);
-            var effectedRecordCount = await _stateManagementContext.SaveChangesAsync();
-            if (effectedRecordCount < 1)
-                return null;
-
             return model;
         }
 
@@ -63,7 +57,6 @@ namespace Infrastructure.Data
                 return null;
 
             _stateManagementContext.Set<T>().Remove(entity);
-            await _stateManagementContext.SaveChangesAsync();
             return entity;
         }
     }

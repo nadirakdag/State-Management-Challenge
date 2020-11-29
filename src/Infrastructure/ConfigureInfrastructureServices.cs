@@ -13,6 +13,7 @@ namespace Infrastructure
                 c.UseSqlite("Filename=StateManagement.db"));
 
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
     }
