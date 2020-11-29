@@ -23,30 +23,34 @@ namespace Application.Services
 
         public async Task<List<StateTask>> GetTasksByFlowId(Guid flowId)
         {
-            return await _unitOfWork.TaskRepository.Get(x => x.FlowId == flowId);
+            return await _unitOfWork.TaskRepository.GetTasksByFlowId(flowId);
         }
 
         public async Task<List<StateTask>> GetTasksByStateId(Guid stateId)
         {
-            return await _unitOfWork.TaskRepository.Get(x => x.StateId == stateId);
+            return await _unitOfWork.TaskRepository.GetTasksByStateId(stateId);
         }
 
         public async Task<StateTask> Get(Guid id)
         {
-            return await _unitOfWork.TaskRepository.FirstOrDefault(x => x.Id == id);
+            return await _unitOfWork.TaskRepository.Get(id);
         }
 
         public async Task<StateTask> Update(StateTask task)
         {
-            task = _unitOfWork.TaskRepository.Update(task);
+            var gonnaUpdateTask = await _unitOfWork.TaskRepository.Get(task.Id);
+
+            gonnaUpdateTask.Title = task.Title;
+
+            gonnaUpdateTask = _unitOfWork.TaskRepository.Update(gonnaUpdateTask);
             await _unitOfWork.SaveChangesAsync();
-            return task;
+            return gonnaUpdateTask;
         }
 
         public async Task<StateTask> Create(StateTask task)
         {
-            var firstState =
-                await _unitOfWork.StateRepository.FirstOrDefault(x => x.FlowId == task.FlowId && x.PrevStateId == null);
+            var firstState = await _unitOfWork.StateRepository.GetFirstStateByFlowId(task.FlowId);
+
             task.Id = Guid.NewGuid();
             task.StateId = firstState.Id;
 
@@ -64,8 +68,7 @@ namespace Application.Services
 
         public async Task<StateTask> ToNextStage(Guid taskId)
         {
-            
-            var task = await _unitOfWork.TaskRepository.FirstOrDefault(x => x.Id == taskId);
+            var task = await _unitOfWork.TaskRepository.Get(taskId);
             if (task == null)
             {
                 return null;
@@ -78,16 +81,18 @@ namespace Application.Services
             }
 
             task.StateId = task.State.NextStateId.Value;
-            
+
             _unitOfWork.TaskRepository.Update(task);
-            
+
             await _unitOfWork.SaveChangesAsync();
+
+            task = await Get(taskId);
             return task;
         }
 
         public async Task<StateTask> ToPrevStage(Guid taskId)
         {
-            var task = await _unitOfWork.TaskRepository.FirstOrDefault(x => x.Id == taskId);
+            var task = await _unitOfWork.TaskRepository.Get(taskId);
             if (task == null)
             {
                 return null;
@@ -100,10 +105,12 @@ namespace Application.Services
             }
 
             task.StateId = task.State.PrevStateId.Value;
-            
+
             _unitOfWork.TaskRepository.Update(task);
-            
+
             await _unitOfWork.SaveChangesAsync();
+
+            task = await Get(taskId);
             return task;
         }
     }

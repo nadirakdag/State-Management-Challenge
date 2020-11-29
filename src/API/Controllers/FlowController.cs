@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using API.Models;
+using API.Models.RequestModel;
+using API.Models.ResponseModel;
 using Application.Common.Interfaces.Services;
+using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,22 +16,23 @@ namespace API.Controllers
     public class FlowController : ControllerBase
     {
         private readonly IFlowService _flowService;
-
-        public FlowController(IFlowService flowService)
+        private readonly IMapper _mapper;
+        public FlowController(IFlowService flowService, IMapper mapper)
         {
             _flowService = flowService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(List<Flow>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<FlowResponseModel>), (int) HttpStatusCode.OK)]
         public async Task<IActionResult> Get()
         {
             var flows = await _flowService.Get();
-            return Ok(flows);
+            return Ok(_mapper.Map<List<FlowResponseModel>>(flows));
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Flow), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(FlowResponseModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -37,24 +40,24 @@ namespace API.Controllers
             if (flow == null)
                 return NotFound();
 
-            return Ok(flow);
+            return Ok(_mapper.Map<FlowResponseModel>(flow));
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(Flow), (int) HttpStatusCode.Created)]
-        public async Task<IActionResult> Post(FlowModel model)
+        [ProducesResponseType(typeof(FlowResponseModel), (int) HttpStatusCode.Created)]
+        public async Task<IActionResult> Post(FlowRequestModel model)
         {
             var flow = await _flowService.Create(new Flow()
             {
                 Title = model.Title
             });
-            return CreatedAtAction(nameof(Get), new {id = flow.Id}, flow);
+            return CreatedAtAction(nameof(Get), new {id = flow.Id}, _mapper.Map<FlowResponseModel>(flow));
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(Flow), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(FlowResponseModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> Put(Guid id, FlowModel model)
+        public async Task<IActionResult> Put(Guid id, FlowRequestModel model)
         {
             var flow = await _flowService.Update(new Flow()
             {
@@ -65,7 +68,7 @@ namespace API.Controllers
             if (flow == null)
                 return NotFound();
 
-            return Ok(flow);
+            return Ok(_mapper.Map<FlowResponseModel>(flow));
         }
 
         [HttpDelete("{id}")]

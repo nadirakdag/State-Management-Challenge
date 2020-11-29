@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.Data;
 using Domain.Entities;
@@ -11,41 +9,32 @@ namespace Infrastructure.Data
 {
     public class EfRepository<T> : IRepository<T> where T : BaseEntity
     {
-        private readonly StateManagementContext _stateManagementContext;
+        protected readonly StateManagementContext StateManagementContext;
 
-        public EfRepository(StateManagementContext stateManagementContext)
+        protected EfRepository(StateManagementContext stateManagementContext)
         {
-            _stateManagementContext = stateManagementContext;
+            this.StateManagementContext = stateManagementContext;
         }
 
         public async Task<List<T>> Get()
         {
-            return await _stateManagementContext.Set<T>().ToListAsync();
+            return await StateManagementContext.Set<T>().ToListAsync();
         }
 
-        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T> Get(Guid id)
         {
-            return await _stateManagementContext.Set<T>().FirstOrDefaultAsync(predicate);
-        }
-        public async Task<List<T>> Get(Expression<Func<T, bool>> predicate)
-        {
-            return await _stateManagementContext.Set<T>().Where(predicate).ToListAsync();
-        }
-
-        public async Task<T> Get(Guid id)
-        {
-            return await _stateManagementContext.Set<T>().FindAsync(id);
+            return await StateManagementContext.Set<T>().FindAsync(id);
         }
 
         public async Task<T> Create(T model)
         {
-            await _stateManagementContext.Set<T>().AddAsync(model);
+            await StateManagementContext.Set<T>().AddAsync(model);
             return model;
         }
 
         public T Update(T model)
         {
-            _stateManagementContext.Set<T>().Update(model);
+            StateManagementContext.Set<T>().Update(model);
             return model;
         }
 
@@ -55,7 +44,7 @@ namespace Infrastructure.Data
             if (entity == null)
                 return null;
 
-            _stateManagementContext.Set<T>().Remove(entity);
+            StateManagementContext.Set<T>().Remove(entity);
             return entity;
         }
     }

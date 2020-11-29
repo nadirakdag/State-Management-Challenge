@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Models;
 using Application;
+using AutoMapper;
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +30,7 @@ namespace API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(MapperProfile));
             services.AddInfrastructureServices();
             services.AddApplicationServices();
             

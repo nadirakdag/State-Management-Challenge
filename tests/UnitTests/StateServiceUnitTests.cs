@@ -74,7 +74,7 @@ namespace UnitTests
             List<State> states = new List<State>();
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
-            mockUnitOfWork.Setup(s => s.StateRepository.FirstOrDefault(It.IsAny<Expression<Func<State, bool>>>()))
+            mockUnitOfWork.Setup(s => s.StateRepository.GetLastStateByFlowId(It.IsAny<Guid>()))
                 .Returns(Task.FromResult(new State()
                 {
                     Id = updatedState,

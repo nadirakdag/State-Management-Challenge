@@ -12,7 +12,9 @@ namespace Infrastructure
             services.AddDbContext<StateManagementContext>(c =>
                 c.UseSqlite("Filename=StateManagement.db"));
 
-            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddScoped<IFlowRepository, FlowRepository>();
+            services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }

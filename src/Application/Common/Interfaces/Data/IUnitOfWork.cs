@@ -5,9 +5,9 @@ namespace Application.Common.Interfaces.Data
 {
     public interface IUnitOfWork
     {
-        IRepository<Flow> FlowRepository { get; }
-        IRepository<State> StateRepository { get; }
-        IRepository<StateTask> TaskRepository { get; } 
+        IFlowRepository FlowRepository { get; }
+        IStateRepository StateRepository { get; }
+        ITaskRepository TaskRepository { get; } 
 
         Task<int> SaveChangesAsync();
     }

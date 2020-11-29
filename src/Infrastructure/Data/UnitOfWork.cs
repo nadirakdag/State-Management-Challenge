@@ -7,9 +7,9 @@ namespace Infrastructure.Data
     public class UnitOfWork : IUnitOfWork
     {
         public UnitOfWork(
-            IRepository<Flow> flowRepository, 
-            IRepository<State> stateRepository,
-            IRepository<StateTask> taskRepository,
+            IFlowRepository flowRepository,
+            IStateRepository stateRepository,
+            ITaskRepository taskRepository,
             StateManagementContext stateManagementContext)
         {
             FlowRepository = flowRepository;
@@ -18,12 +18,12 @@ namespace Infrastructure.Data
             TaskRepository = taskRepository;
         }
 
-        public IRepository<Flow> FlowRepository { get; }
-        public IRepository<State> StateRepository { get; }
-        public IRepository<StateTask> TaskRepository { get; }
+        public IFlowRepository FlowRepository { get; }
+        public IStateRepository StateRepository { get; }
+        public ITaskRepository TaskRepository { get; }
 
-        private readonly StateManagementContext _stateManagementContext; 
-        
+        private readonly StateManagementContext _stateManagementContext;
+
         public async Task<int> SaveChangesAsync()
         {
             return await _stateManagementContext.SaveChangesAsync();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Transactions;
 using Application.Common.Interfaces.Data;
 using Application.Common.Interfaces.Services;
 using Domain.Entities;
@@ -18,7 +19,7 @@ namespace Application.Services
 
         public async Task<List<State>> GetByFlowId(Guid flowId)
         {
-            return await _unitOfWork.StateRepository.Get(x => x.FlowId == flowId);
+            return await _unitOfWork.StateRepository.GetByFlowId(flowId);
         }
 
         public async Task<State> Get(Guid id)
@@ -28,14 +29,17 @@ namespace Application.Services
 
         public async Task<State> Update(State state)
         {
-            state =  _unitOfWork.StateRepository.Update(state);
+            var gonnaUpdateState = await Get(state.Id);
+
+            gonnaUpdateState.Title = state.Title;
+            gonnaUpdateState =  _unitOfWork.StateRepository.Update(gonnaUpdateState);
             await _unitOfWork.SaveChangesAsync();
-            return state;
+            return gonnaUpdateState;
         }
 
         public async  Task<State> Create(State state)
         {
-            var prevState = await _unitOfWork.StateRepository.FirstOrDefault(x => x.NextStateId == null && x.FlowId == state.FlowId);
+            var prevState = await _unitOfWork.StateRepository.GetLastStateByFlowId(state.FlowId); //StateRepository.FirstOrDefault(x => x.NextStateId == null && x.FlowId == state.FlowId);
             
             state.Id = Guid.NewGuid();
             state.PrevStateId = prevState?.Id;
@@ -68,7 +72,8 @@ namespace Application.Services
                 nextState.PrevStateId = state.PrevStateId;
                 _unitOfWork.StateRepository.Update(nextState);
             }
-            
+
+            await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.StateRepository.Delete(id);
             await _unitOfWork.SaveChangesAsync();
         }

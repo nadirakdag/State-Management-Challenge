@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 
 namespace Domain.Entities
 {
@@ -11,7 +12,11 @@ namespace Domain.Entities
         public Flow Flow { get; set; }
         
         public Guid? PrevStateId { get; set; }
+        public virtual State PrevState { get; set; }
+        
         public Guid? NextStateId { get; set; }
+        public virtual State NextState { get; set; }
+        
         
         public ICollection<StateTask> Task { get; set; }
     }

@@ -21,9 +21,9 @@ namespace IntegrationTests
                 .Options;
 
             _stateManagementContext = new StateManagementContext(dbOptions);
-            var flowRepository = new EfRepository<Flow>(_stateManagementContext);
-            var stateRepository = new EfRepository<State>(_stateManagementContext);
-            var taskRepository = new EfRepository<StateTask>(_stateManagementContext);
+            var flowRepository = new FlowRepository(_stateManagementContext);
+            var stateRepository = new StateRepository(_stateManagementContext);
+            var taskRepository = new TaskRepository(_stateManagementContext);
             _unitOfWork = new UnitOfWork(flowRepository, stateRepository, taskRepository, _stateManagementContext);
         }
 
