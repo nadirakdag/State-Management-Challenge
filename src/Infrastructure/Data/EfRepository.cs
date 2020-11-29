@@ -47,5 +47,10 @@ namespace Infrastructure.Data
             StateManagementContext.Set<T>().Remove(entity);
             return entity;
         }
+
+        public async Task<bool> IsAny(Guid id)
+        {
+            return await StateManagementContext.Set<T>().AnyAsync(x => x.Id == id);
+        }
     }
 }

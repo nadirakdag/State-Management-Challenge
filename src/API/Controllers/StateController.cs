@@ -25,7 +25,7 @@ namespace API.Controllers
 
         [HttpGet("api/states/{id}")]
         [ProducesResponseType(typeof(StateResponseModel), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get(Guid id)
         {
             var state = await _stateService.Get(id);
@@ -57,20 +57,24 @@ namespace API.Controllers
         }
 
         [HttpPut("api/states/{id}")]
-        [ProducesResponseType(typeof(StateResponseModel), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Put(Guid id, StateRequestModel model)
+        [ProducesResponseType(typeof(StateResponseModel), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        async Task<IActionResult> Put(Guid id, StateRequestModel model)
         {
             var state = await _stateService.Update(new State()
             {
                 Id = id,
                 Title = model.Title
             });
-            
+
+            if (state == null)
+                return NotFound();
+
             return Ok(_mapper.Map<StateResponseModel>(state));
         }
 
         [HttpDelete("api/states/{id}")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _stateService.Delete(id);

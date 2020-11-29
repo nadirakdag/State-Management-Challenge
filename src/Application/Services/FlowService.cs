@@ -28,6 +28,11 @@ namespace Application.Services
 
         public async Task<Flow> Update(Flow flow)
         {
+            if (await _unitOfWork.FlowRepository.IsAny(flow.Id) == false)
+            {
+                return null;
+            }
+            
             flow = _unitOfWork.FlowRepository.Update(flow);
             await _unitOfWork.SaveChangesAsync();
             return flow;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Transactions;
 using Application.Common.Interfaces.Data;
 using Application.Common.Interfaces.Services;
 using Domain.Entities;
@@ -30,6 +29,8 @@ namespace Application.Services
         public async Task<State> Update(State state)
         {
             var gonnaUpdateState = await Get(state.Id);
+            if (gonnaUpdateState == null)
+                return null;
 
             gonnaUpdateState.Title = state.Title;
             gonnaUpdateState =  _unitOfWork.StateRepository.Update(gonnaUpdateState);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Domain.Entities;
 
@@ -13,5 +12,6 @@ namespace Application.Common.Interfaces.Data
         Task<T> Create(T model);
         T Update(T model);
         Task<T> Delete(Guid id);
+        Task<bool> IsAny(Guid id);
     }
 }

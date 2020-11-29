@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces.Data;
 using Application.Common.Interfaces.Services;
 using Domain.Entities;
@@ -39,6 +40,8 @@ namespace Application.Services
         public async Task<StateTask> Update(StateTask task)
         {
             var gonnaUpdateTask = await _unitOfWork.TaskRepository.Get(task.Id);
+            if (gonnaUpdateTask == null)
+                return null;
 
             gonnaUpdateTask.Title = task.Title;
 
@@ -77,7 +80,7 @@ namespace Application.Services
             var currentSate = task.State;
             if (currentSate.NextStateId == null)
             {
-                throw new Exception("No next state");
+                throw new TaskStateUpdateException("No next state",task);
             }
 
             task.StateId = task.State.NextStateId.Value;
@@ -101,7 +104,7 @@ namespace Application.Services
             var currentSate = task.State;
             if (currentSate.PrevStateId == null)
             {
-                throw new Exception("No next state");
+                throw new TaskStateUpdateException("No prev state", task);
             }
 
             task.StateId = task.State.PrevStateId.Value;
