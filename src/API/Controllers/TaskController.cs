@@ -37,15 +37,15 @@ namespace API.Controllers
             return Ok(_mapper.Map<TaskResponseModel>(task));
         }
 
-        [HttpPost("api/tasks/{id}/to-next-stage")]
+        [HttpPost("api/tasks/{taskId}/to-next-stage")]
         [ProducesResponseType(typeof(TaskStateResponseModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(TaskStateResponseModel), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> ToNextStage(Guid id)
+        public async Task<IActionResult> ToNextStage(Guid taskId)
         {
             try
             {
-                var task = await _taskService.ToNextStage(id);
+                var task = await _taskService.ToNextStage(taskId);
 
                 if (task == null)
                     return NotFound();
@@ -76,15 +76,15 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("api/tasks/{id}/to-prev-stage")]
+        [HttpPost("api/tasks/{taskId}/to-prev-stage")]
         [ProducesResponseType(typeof(TaskStateResponseModel), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(TaskStateResponseModel), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> ToPrevStage(Guid id)
+        public async Task<IActionResult> ToPrevStage(Guid taskId)
         {
             try
             {
-                var task = await _taskService.ToPrevStage(id);
+                var task = await _taskService.ToPrevStage(taskId);
 
                 if (task == null)
                     return NotFound();

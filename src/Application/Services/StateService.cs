@@ -40,7 +40,7 @@ namespace Application.Services
 
         public async  Task<State> Create(State state)
         {
-            var prevState = await _unitOfWork.StateRepository.GetLastStateByFlowId(state.FlowId); //StateRepository.FirstOrDefault(x => x.NextStateId == null && x.FlowId == state.FlowId);
+            var prevState = await _unitOfWork.StateRepository.GetLastStateByFlowId(state.FlowId); 
             
             state.Id = Guid.NewGuid();
             state.PrevStateId = prevState?.Id;
@@ -74,7 +74,7 @@ namespace Application.Services
                 _unitOfWork.StateRepository.Update(nextState);
             }
 
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(); 
             await _unitOfWork.StateRepository.Delete(id);
             await _unitOfWork.SaveChangesAsync();
         }

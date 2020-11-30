@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Application.Common.Interfaces.Data;
 using Application.Services;
@@ -48,7 +47,6 @@ namespace UnitTests
                 }));
 
             mockUnitOfWork.Setup(s => s.StateRepository.Delete(It.Is<Guid>(x => x == gonnaDeleted)));
-
 
             mockUnitOfWork.Setup(s => s.StateRepository.Update(It.IsAny<State>()))
                 .Callback<State>(state => states.Add(state));
